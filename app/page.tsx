@@ -1,95 +1,174 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client'
 
-export default function Home() {
+import { useState } from 'react'
+import StockChart from '@/components/StockChart'
+import './homepage.css'
+import './chart.css'
+
+interface StockDataPoint {
+  date: string
+  open: number
+  high: number
+  low: number
+  close: number
+  volume: number
+}
+
+interface StockResponse {
+  symbol: string
+  lastRefreshed: string
+  data: StockDataPoint[]
+}
+
+export default function HomePage() {
+  const [stockSymbol, setStockSymbol] = useState<string>('')
+  const [isFocused, setIsFocused] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [stockData, setStockData] = useState<StockResponse | null>(null)
+  const [error, setError] = useState<string | null>(null)
+
+  const handleAnalyze = async () => {
+    if (!stockSymbol.trim()) return
+    
+    setIsLoading(true)
+    setError(null)
+    
+    try {
+      const response = await fetch(`/api/stock/${stockSymbol.toUpperCase()}`)
+      const data = await response.json()
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch stock data')
+      }
+      
+      setStockData(data)
+    } catch (err: any) {
+      setError(err.message)
+      setStockData(null)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleBarClick = async (dataPoint: StockDataPoint) => {
+    console.log('🤖 Clicked on date:', dataPoint.date)
+    console.log('📊 OHLC Data:', {
+      open: dataPoint.open,
+      high: dataPoint.high,
+      low: dataPoint.low,
+      close: dataPoint.close,
+      volume: dataPoint.volume
+    })
+    
+    // TODO: Later you'll call your agentic research API here
+    // Example: await fetch(`/api/analysis/${stockSymbol}/${dataPoint.date}`)
+    
+    alert(`AI Analysis triggered for ${stockSymbol} on ${dataPoint.date}\n\nOHLC: $${dataPoint.open}/$${dataPoint.high}/$${dataPoint.low}/$${dataPoint.close}\nVolume: ${dataPoint.volume.toLocaleString()}`)
+  }
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleAnalyze()
+    }
+  }
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+    <main className="homepage">
+      {/* Background */}
+      <div className="background">
+        <div className="orb orb-1"></div>
+        <div className="orb orb-2"></div>
+        <div className="orb orb-3"></div>
+        
+        <div className="particles">
+          <div className="particle particle-1"></div>
+          <div className="particle particle-2"></div>
+          <div className="particle particle-3"></div>
+          <div className="particle particle-4"></div>
         </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+        
+        <div className="grid-pattern"></div>
+        <div className="scanning-lines">
+          <div className="scan-line scan-1"></div>
+          <div className="scan-line scan-2"></div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="content">
+        <div className="container">
+          
+          {/* Header */}
+          <header className="header">
+            <div className="title-wrapper">
+              <h1 className="title">VizAI</h1>
+              <div className="title-underline"></div>
+            </div>
+            <p className="subtitle">
+              Next-generation stock visualization powered by AI
+            </p>
+          </header>
+
+          {/* Input Section */}
+          <section className="input-section">
+            <div className="input-container">
+              <label className="input-label">
+                <span className="label-dot"></span>
+                Stock Symbol
+              </label>
+              
+              <div className="input-wrapper">
+                <input
+                  type="text"
+                  value={stockSymbol}
+                  onChange={(e) => setStockSymbol(e.target.value.toUpperCase())}
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => setIsFocused(false)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="AAPL, TSLA, GOOGL..."
+                  className={`stock-input ${isFocused ? 'focused' : ''}`}
+                  disabled={isLoading}
+                />
+                <div className="input-glow"></div>
+              </div>
+
+              <button 
+                className="analyze-btn" 
+                type="button"
+                onClick={handleAnalyze}
+                disabled={isLoading || !stockSymbol.trim()}
+              >
+                {isLoading ? 'Analyzing...' : 'Analyze Stock'}
+              </button>
+
+              <div className="status">
+                <span className="status-dot"></span>
+                {isLoading ? 'Fetching data...' : 'Ready for market analysis'}
+              </div>
+            </div>
+          </section>
+
+          {/* Error Display */}
+          {error && (
+            <div className="error-container">
+              <div className="error-message">
+                <span className="error-icon">⚠️</span>
+                {error}
+              </div>
+            </div>
+          )}
+
+          {/* Stock Chart */}
+          {stockData && (
+            <StockChart 
+              data={stockData.data}
+              symbol={stockData.symbol}
+              onBarClick={handleBarClick}
+            />
+          )}
+
+        </div>
+      </div>
+    </main>
+  )
 }

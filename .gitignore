@@ -39,3 +39,53 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# VizAI specific files
+# Stock data cache
+/cache/
+/data/temp/
+/public/generated/
+/public/charts/
+
+# User uploads (future feature)
+/uploads/
+
+# Database files
+*.sql
+*.dump
+*.sqlite
+*.db
+
+# Configuration files with secrets
+config.local.js
+config.production.js
+
+# API response cache
+/api-cache/
+
+# Generated reports
+/reports/
+*.pdf
+*.xlsx
+
+# Temporary analysis files
+/temp-analysis/
+
+# Logs
+logs/
+*.log
