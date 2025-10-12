@@ -31,7 +31,7 @@ interface StockChartProps {
 // Custom tooltip component
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
-    const data = payload[1].payload
+    const data = payload[0].payload
     return (
       <div className="chart-tooltip">
         <h4 className="tooltip-title">{label}</h4>
@@ -64,51 +64,6 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null
 }
 
-// Custom bar component for OHLC
-const OHLCBar = (props: any) => {
-  const { payload, x, y, width, height } = props
-  
-  if (!payload) return null
-  
-  const { open, high, low, close } = payload
-  const isPositive = close >= open
-  const color = isPositive ? '#10b981' : '#ef4444' // Green for up, red for down
-  
-  // Calculate positions
-  const openY = y + height - ((open - payload.low) / (payload.high - payload.low)) * height
-  const closeY = y + height - ((close - payload.low) / (payload.high - payload.low)) * height
-  const highY = y
-  const lowY = y + height
-  
-  const barWidth = Math.max(width * 0.6, 2)
-  const centerX = x + width / 2
-  
-  return (
-    <g className="ohlc-bar" style={{ cursor: 'pointer' }}>
-      {/* High-Low line */}
-      <line
-        x1={centerX}
-        y1={highY}
-        x2={centerX}
-        y2={lowY}
-        stroke={color}
-        strokeWidth={1.5}
-      />
-      
-      {/* Open-Close body */}
-      <rect
-        x={centerX - barWidth / 2}
-        y={Math.min(openY, closeY)}
-        width={barWidth}
-        height={Math.abs(closeY - openY) || 1}
-        fill={color}
-        stroke={color}
-        className="candlestick-body"
-      />
-    </g>
-  )
-}
-
 export default function StockChart({ data, symbol, onBarClick }: StockChartProps) {
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   
@@ -124,13 +79,91 @@ export default function StockChart({ data, symbol, onBarClick }: StockChartProps
     changePercent: ((point.close - point.open) / point.open * 100)
   }))
   
-  // Handle bar click
-  const handleBarClick = (data: any) => {
-    if (data && data.activePayload && data.activePayload[0]) {
-      const dataPoint = data.activePayload[0].payload
-      setSelectedDate(dataPoint.date)
-      onBarClick?.(dataPoint)
+  // 🔹 MODIFIED: Custom OHLC Bar component with individual click handlers
+  const OHLCBar = (props: any) => {
+    const { payload, x, y, width, height } = props
+    
+    if (!payload) return null
+    
+    const { open, high, low, close, date } = payload
+    const isPositive = close >= open
+    const isSelected = selectedDate === date
+    
+    // 🔹 MODIFIED: Color logic with selection highlight
+    let color = isPositive ? '#10b981' : '#ef4444' // Green for up, red for down
+    if (isSelected) {
+      color = '#60a5fa' // Blue when selected
     }
+    
+    // Calculate positions
+    const openY = y + height - ((open - payload.low) / (payload.high - payload.low)) * height
+    const closeY = y + height - ((close - payload.low) / (payload.high - payload.low)) * height
+    const highY = y
+    const lowY = y + height
+    
+    const barWidth = Math.max(width * 0.6, 2)
+    const centerX = x + width / 2
+    
+    // 🔹 ADDED: Click handler for individual bars
+    const handleClick = (e: React.MouseEvent) => {
+      e.stopPropagation() // Prevent event bubbling
+      console.log('🔥 Bar clicked:', payload) // Debug log
+      
+      // Set selected state
+      setSelectedDate(date)
+      
+      // Call parent's onBarClick with the data point
+      if (onBarClick) {
+        onBarClick({
+          date: payload.date,
+          open: payload.open,
+          high: payload.high,
+          low: payload.low,
+          close: payload.close,
+          volume: payload.volume
+        })
+      }
+    }
+    
+    return (
+      <g 
+        className="ohlc-bar" 
+        style={{ cursor: 'pointer' }}
+        onClick={handleClick} // 🔹 ADDED: Individual click handler
+      >
+        {/* High-Low line */}
+        <line
+          x1={centerX}
+          y1={highY}
+          x2={centerX}
+          y2={lowY}
+          stroke={color}
+          strokeWidth={isSelected ? 2.5 : 1.5} // 🔹 ADDED: Thicker line when selected
+        />
+        
+        {/* Open-Close body */}
+        <rect
+          x={centerX - barWidth / 2}
+          y={Math.min(openY, closeY)}
+          width={barWidth}
+          height={Math.abs(closeY - openY) || 1}
+          fill={color}
+          stroke={color}
+          strokeWidth={isSelected ? 1.5 : 1} // 🔹 ADDED: Thicker stroke when selected
+          className="candlestick-body"
+        />
+        
+        {/* 🔹 ADDED: Invisible larger click area for easier clicking */}
+        <rect
+          x={centerX - width / 2}
+          y={y}
+          width={width}
+          height={height}
+          fill="transparent"
+          className="click-area"
+        />
+      </g>
+    )
   }
   
   // Calculate price bounds for better scaling
@@ -156,6 +189,11 @@ export default function StockChart({ data, symbol, onBarClick }: StockChartProps
             <div className="legend-color negative"></div>
             <span>Bearish</span>
           </div>
+          {/* 🔹 ADDED: Selected state indicator in legend */}
+          <div className="legend-item">
+            <div className="legend-color selected"></div>
+            <span>Selected</span>
+          </div>
         </div>
       </div>
       
@@ -165,7 +203,7 @@ export default function StockChart({ data, symbol, onBarClick }: StockChartProps
           <ComposedChart
             data={chartData}
             margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
-            onClick={handleBarClick}
+            // 🔹 REMOVED: onClick from ComposedChart (now handled in individual bars)
           >
             <defs>
               <linearGradient id="gridGradient" x1="0" y1="0" x2="0" y2="1">
@@ -211,7 +249,7 @@ export default function StockChart({ data, symbol, onBarClick }: StockChartProps
               />
             )}
             
-            {/* OHLC Bars */}
+            {/* 🔹 MODIFIED: OHLC Bars with individual click handling */}
             <Bar
               dataKey="close"
               fill="transparent"
@@ -232,12 +270,18 @@ export default function StockChart({ data, symbol, onBarClick }: StockChartProps
         </ResponsiveContainer>
       </div>
       
-      {/* Analysis Hint */}
+      {/* Chart Footer */}
       <div className="chart-footer">
         <div className="analysis-hint">
           <span className="hint-icon">🤖</span>
           <span>Click on any bar to trigger AI analysis for that trading day</span>
         </div>
+        {/* 🔹 ADDED: Show selected date info */}
+        {selectedDate && (
+          <div className="selected-info">
+            <span>Selected: {new Date(selectedDate).toLocaleDateString()}</span>
+          </div>
+        )}
       </div>
     </div>
   )
