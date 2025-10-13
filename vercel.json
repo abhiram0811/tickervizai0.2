@@ -1,0 +1,16 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "installCommand": "npm install",
+  "devCommand": "npm run dev",
+  "regions": ["iad1"],
+  "functions": {
+    "app/api/stock/[symbol]/route.ts": {
+      "maxDuration": 10
+    },
+    "app/api/analysis/[symbol]/[date]/route.ts": {
+      "maxDuration": 30
+    }
+  }
+}
