@@ -68,16 +68,25 @@ export default function StockChart({ data, symbol, onBarClick }: StockChartProps
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   
   // Transform data for the chart
-  const chartData = data.map(point => ({
-    ...point,
-    displayDate: new Date(point.date).toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric' 
-    }),
-    // Calculate price range for OHLC visualization
-    priceRange: point.high - point.low,
-    changePercent: ((point.close - point.open) / point.open * 100)
-  }))
+  const chartData = data.map(point => {
+    // Parse date parts to avoid timezone issues
+    const dateParts = point.date.split('-')
+    const year = parseInt(dateParts[0])
+    const month = parseInt(dateParts[1]) - 1 // Month is 0-indexed
+    const day = parseInt(dateParts[2])
+    const dateObj = new Date(year, month, day)
+    
+    return {
+      ...point,
+      displayDate: dateObj.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric' 
+      }),
+      // Calculate price range for OHLC visualization
+      priceRange: point.high - point.low,
+      changePercent: ((point.close - point.open) / point.open * 100)
+    }
+  })
   
   // 🔹 MODIFIED: Custom OHLC Bar component with individual click handlers
   const OHLCBar = (props: any) => {
@@ -107,7 +116,6 @@ export default function StockChart({ data, symbol, onBarClick }: StockChartProps
     // 🔹 ADDED: Click handler for individual bars
     const handleClick = (e: React.MouseEvent) => {
       e.stopPropagation() // Prevent event bubbling
-      console.log('🔥 Bar clicked:', payload) // Debug log
       
       // Set selected state
       setSelectedDate(date)
@@ -115,7 +123,7 @@ export default function StockChart({ data, symbol, onBarClick }: StockChartProps
       // Call parent's onBarClick with the data point
       if (onBarClick) {
         onBarClick({
-          date: payload.date,
+          date: payload.date, // Use the original date string to avoid timezone issues
           open: payload.open,
           high: payload.high,
           low: payload.low,
@@ -279,7 +287,17 @@ export default function StockChart({ data, symbol, onBarClick }: StockChartProps
         {/* 🔹 ADDED: Show selected date info */}
         {selectedDate && (
           <div className="selected-info">
-            <span>Selected: {new Date(selectedDate).toLocaleDateString()}</span>
+            <span>Selected: {(() => {
+              const dateParts = selectedDate.split('-')
+              const year = parseInt(dateParts[0])
+              const month = parseInt(dateParts[1]) - 1 
+              const day = parseInt(dateParts[2])
+              return new Date(year, month, day).toLocaleDateString('en-US', {
+                month: 'numeric',
+                day: 'numeric', 
+                year: 'numeric'
+              })
+            })()}</span>
           </div>
         )}
       </div>
