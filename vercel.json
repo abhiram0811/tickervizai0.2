@@ -11,6 +11,9 @@
     },
     "app/api/analysis/[symbol]/[date]/route.ts": {
       "maxDuration": 30
+    },
+    "app/api/agents/agentic-news-research/route.ts": {
+      "maxDuration": 60
     }
   }
 }
