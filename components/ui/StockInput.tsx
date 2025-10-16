@@ -6,7 +6,7 @@ interface StockInputProps {
   isAnalyzing: boolean
   onInputChange: (value: string) => void
   onAnalyze: () => void
-  onKeyPress: (e: React.KeyboardEvent) => void
+  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void
 }
 
 export default function StockInput({ 
@@ -15,7 +15,7 @@ export default function StockInput({
   isAnalyzing, 
   onInputChange, 
   onAnalyze, 
-  onKeyPress 
+  onKeyDown 
 }: StockInputProps) {
   return (
     <section className="input-section">
@@ -30,7 +30,7 @@ export default function StockInput({
             type="text"
             value={stockSymbol}
             onChange={(e) => onInputChange(e.target.value)}
-            onKeyPress={onKeyPress}
+            onKeyDown={onKeyDown}
             placeholder="AAPL, TSLA, GOOGL..."
             className="stock-input"
             disabled={isLoading}

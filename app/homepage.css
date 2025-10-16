@@ -161,6 +161,13 @@
 .header {
   margin-bottom: 80px;
   animation: fadeInUp 1s ease-out;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.1);
 }
 
 .title-wrapper {

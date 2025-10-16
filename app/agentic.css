@@ -1,0 +1,331 @@
+/* Agentic AI Analysis Styles */
+.agentic-container {
+    max-width: 64rem;
+    margin: 0 auto;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, rgb(17, 24, 39) 0%, rgb(31, 41, 55) 50%, rgb(0, 0, 0) 100%);
+    border: 1px solid rgba(6, 182, 212, 0.2);
+    border-radius: 1rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+/* Inline Agentic Analysis - No Modal */
+.agentic-inline-container {
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 16px;
+    padding: 24px;
+    margin-top: 32px;
+    position: relative;
+    overflow: hidden;
+}
+
+.agentic-inline-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.03), rgba(147, 51, 234, 0.03));
+    pointer-events: none;
+}
+
+.agentic-price-summary {
+    background: linear-gradient(90deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
+}
+
+.agentic-price-summary h3 {
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.agentic-price-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    .agentic-price-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.agentic-price-card {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.agentic-price-label {
+    color: rgb(156, 163, 175);
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.agentic-price-value {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.agentic-price-positive {
+    color: rgb(74, 222, 128);
+}
+
+.agentic-price-negative {
+    color: rgb(248, 113, 113);
+}
+
+.agentic-price-neutral {
+    color: white;
+    font-weight: 600;
+}
+
+.agentic-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+}
+
+.agentic-modal-content {
+    background: linear-gradient(135deg, rgb(17, 24, 39) 0%, rgb(31, 41, 55) 50%, rgb(0, 0, 0) 100%);
+    border-radius: 1rem;
+    border: 1px solid rgba(6, 182, 212, 0.3);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    width: 100%;
+    padding: 2rem;
+}
+
+.agentic-header {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.agentic-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, rgb(34, 211, 238), rgb(59, 130, 246), rgb(147, 51, 234));
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    margin-bottom: 0.75rem;
+}
+
+.agentic-subtitle {
+    color: rgb(209, 213, 219);
+    font-size: 1.125rem;
+}
+
+.agentic-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 3rem;
+}
+
+/* Chic Minimalistic Loading */
+.agentic-loading-minimalist {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 24px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    border: 1px solid rgba(59, 130, 246, 0.1);
+    margin: 16px 0;
+}
+
+.agentic-pulse-dots {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.agentic-pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgb(6, 182, 212);
+    animation: pulse 1.4s ease-in-out infinite both;
+}
+
+.agentic-pulse-dot:nth-child(1) { animation-delay: -0.32s; }
+.agentic-pulse-dot:nth-child(2) { animation-delay: -0.16s; }
+.agentic-pulse-dot:nth-child(3) { animation-delay: 0s; }
+
+@keyframes pulse {
+    0%, 80%, 100% {
+        transform: scale(0.6);
+        opacity: 0.4;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.agentic-loading-minimal-text {
+    color: rgb(156, 163, 175);
+    font-size: 14px;
+    font-weight: 400;
+    margin: 0;
+}
+
+.agentic-spinner {
+    width: 3rem;
+    height: 3rem;
+    border: 3px solid rgba(6, 182, 212, 0.2);
+    border-top: 3px solid rgb(6, 182, 212);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.agentic-loading-text {
+    color: rgb(6, 182, 212);
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.agentic-close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(239, 68, 68, 0.1);
+    color: rgb(239, 68, 68);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 1.25rem;
+    line-height: 1;
+}
+
+.agentic-close-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    transform: scale(1.1);
+}
+
+.agentic-section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: rgba(31, 41, 55, 0.5);
+    border-radius: 0.75rem;
+    border: 1px solid rgba(75, 85, 99, 0.5);
+}
+
+.agentic-section-title {
+    color: rgb(34, 211, 238);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.agentic-strategy-item, .agentic-causality-item {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    border-left: 3px solid rgb(34, 211, 238);
+}
+
+.agentic-strategy-item:last-child, .agentic-causality-item:last-child {
+    margin-bottom: 0;
+}
+
+.agentic-item-title {
+    color: rgb(34, 211, 238);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.agentic-item-content {
+    color: rgb(209, 213, 219);
+    line-height: 1.6;
+}
+
+.agentic-code-block {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(75, 85, 99, 0.3);
+    overflow-x: auto;
+}
+
+.agentic-code-text {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.875rem;
+    color: rgb(156, 163, 175);
+    white-space: pre-wrap;
+}
+
+.agentic-error {
+    color: rgb(239, 68, 68);
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    text-align: center;
+}
+
+.agentic-button {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(90deg, rgb(8, 145, 178), rgb(37, 99, 235));
+    color: white;
+    font-weight: 600;
+    border-radius: 0.75rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    transform: scale(1);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.agentic-button:hover:not(:disabled) {
+    background: linear-gradient(90deg, rgb(6, 182, 212), rgb(59, 130, 246));
+    transform: scale(1.02);
+}
+
+.agentic-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: scale(1);
+}

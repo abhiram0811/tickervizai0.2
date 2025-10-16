@@ -87,7 +87,7 @@ export default function StockChart({ data, symbol, onBarClick }: StockChartProps
       changePercent: ((point.close - point.open) / point.open * 100)
     }
   })
-
+  
   // 🔹 MODIFIED: Custom OHLC Bar component with individual click handlers
   const OHLCBar = (props: any) => {
     const { payload, x, y, width, height } = props
@@ -104,18 +104,31 @@ export default function StockChart({ data, symbol, onBarClick }: StockChartProps
       color = '#60a5fa' // Blue when selected
     }
     
-    // Calculate positions
-    const openY = y + height - ((open - payload.low) / (payload.high - payload.low)) * height
-    const closeY = y + height - ((close - payload.low) / (payload.high - payload.low)) * height
-    const highY = y
-    const lowY = y + height
-    
+    // For proper OHLC rendering, we need to use the actual price values
+    // and let the chart's scale handle the positioning
     const barWidth = Math.max(width * 0.6, 2)
     const centerX = x + width / 2
     
-    // 🔹 ADDED: Click handler for individual bars
+    // Since we can't easily get the Y-scale from Recharts, 
+    // we'll use a simpler approach with relative positioning
+    const priceRange = high - low
+    const relativeOpen = (open - low) / priceRange
+    const relativeClose = (close - low) / priceRange
+    
+    const openY = y + height * (1 - relativeOpen)
+    const closeY = y + height * (1 - relativeClose)
+    const highY = y
+    const lowY = y + height
+    
+    // 🔹 MODIFIED: Click handler with toggle functionality
     const handleClick = (e: React.MouseEvent) => {
       e.stopPropagation() // Prevent event bubbling
+      
+      // Toggle selection - if already selected, deselect it
+      if (selectedDate === date) {
+        setSelectedDate(null)
+        return // Don't trigger onBarClick when deselecting
+      }
       
       // Set selected state
       setSelectedDate(date)
@@ -154,7 +167,7 @@ export default function StockChart({ data, symbol, onBarClick }: StockChartProps
           x={centerX - barWidth / 2}
           y={Math.min(openY, closeY)}
           width={barWidth}
-          height={Math.abs(closeY - openY) || 1}
+          height={Math.max(Math.abs(closeY - openY), 1)}
           fill={color}
           stroke={color}
           strokeWidth={isSelected ? 1.5 : 1} // 🔹 ADDED: Thicker stroke when selected
@@ -211,6 +224,7 @@ export default function StockChart({ data, symbol, onBarClick }: StockChartProps
           <ComposedChart
             data={chartData}
             margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+            // 🔹 REMOVED: onClick from ComposedChart (now handled in individual bars)
           >
             <defs>
               <linearGradient id="gridGradient" x1="0" y1="0" x2="0" y2="1">
@@ -249,8 +263,8 @@ export default function StockChart({ data, symbol, onBarClick }: StockChartProps
             {/* Selected date reference line */}
             {selectedDate && (
               <ReferenceLine 
-                x={chartData.find(d => d.date === selectedDate)?.displayDate} 
-                stroke="#60a5fa" 
+                x={chartData.find(d => d.date === selectedDate)?.displayDate}
+                stroke="#60a5fa"
                 strokeWidth={2}
                 strokeDasharray="4 4"
               />

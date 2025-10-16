@@ -6,6 +6,7 @@ import StockInput from '@/components/ui/StockInput'
 import ErrorMessage from '@/components/ui/ErrorMessage'
 import AILoadingState from '@/components/analysis/AILoadingState'
 import AIInsightsReport from '@/components/analysis/AIInsightsReport'
+import AgenticAnalysis from '@/components/agents/AgenticAnalysis'
 
 interface StockDataPoint {
   date: string
@@ -49,6 +50,11 @@ export default function InteractiveContent() {
   const [error, setError] = useState<string | null>(null)
   const [aiAnalysis, setAiAnalysis] = useState<AIAnalysisResult | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [agenticAnalysis, setAgenticAnalysis] = useState<{
+    symbol: string
+    date: string
+    ohlcData: StockDataPoint
+  } | null>(null)
 
   const handleAnalyze = async () => {
     if (!stockSymbol.trim()) return
@@ -56,6 +62,8 @@ export default function InteractiveContent() {
     setIsLoading(true)
     setError(null)
     setAiAnalysis(null)
+    // 🔹 ADDED: Reset agentic analysis when searching new stock
+    setAgenticAnalysis(null)
     
     try {
       const response = await fetch(`/api/stock/${stockSymbol.toUpperCase()}`)
@@ -75,42 +83,26 @@ export default function InteractiveContent() {
   }
 
   const handleBarClick = async (dataPoint: StockDataPoint) => {
-    console.log('🤖 Clicked on date:', dataPoint.date)
+    console.log('🤖 Agentic Analysis 2.0 - Clicked on date:', dataPoint.date)
     
-    setIsAnalyzing(true)
-    setError(null)
+    // Show the inline agentic analysis
+    setAgenticAnalysis({
+      symbol: stockData?.symbol || '',
+      date: dataPoint.date,
+      ohlcData: dataPoint
+    })
     
-    try {
-      const response = await fetch(`/api/analysis/${stockData?.symbol}/${dataPoint.date}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ohlcData: {
-            open: dataPoint.open,
-            high: dataPoint.high,
-            low: dataPoint.low,
-            close: dataPoint.close,
-            volume: dataPoint.volume
-          }
+    // Smooth scroll to show both chart and analysis
+    setTimeout(() => {
+      const analysisElement = document.querySelector('.agentic-inline-container')
+      if (analysisElement) {
+        analysisElement.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start',
+          inline: 'nearest'
         })
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to get AI analysis')
       }
-
-      const analysisResult = await response.json()
-      console.log('🧠 AI Analysis Result:', analysisResult)
-      setAiAnalysis(analysisResult)
-      
-    } catch (error) {
-      console.error('Error getting AI analysis:', error)
-      setError('Sorry, AI analysis failed. Please try again.')
-    } finally {
-      setIsAnalyzing(false)
-    }
+    }, 100)
   }
 
   const handleInputChange = (value: string) => {
@@ -134,7 +126,7 @@ export default function InteractiveContent() {
         isAnalyzing={isAnalyzing}
         onInputChange={handleInputChange}
         onAnalyze={handleAnalyze}
-        onKeyPress={(e) => e.key === 'Enter' && handleAnalyze()}
+        onKeyDown={(e) => e.key === 'Enter' && handleAnalyze()}
       />
 
       {/* Error Display - Client component for dismiss functionality */}
@@ -162,6 +154,15 @@ export default function InteractiveContent() {
         <AIInsightsReport
           analysis={aiAnalysis}
           onClose={handleCloseAnalysis}
+        />
+      )}
+
+      {/* Agentic Analysis 2.0 - Inline Component */}
+      {agenticAnalysis && (
+        <AgenticAnalysis
+          symbol={agenticAnalysis.symbol}
+          date={agenticAnalysis.date}
+          ohlcData={agenticAnalysis.ohlcData}
         />
       )}
     </>

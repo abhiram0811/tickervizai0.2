@@ -2,6 +2,7 @@
 import Background from '@/components/ui/Background'
 import Header from '@/components/ui/Header'
 import InteractiveContent from '@/components/InteractiveContent'
+
 import './homepage.css'
 import './chart.css'
 
@@ -24,6 +25,7 @@ export default function HomePage() {
 
           {/* All Interactive Content - Client Component */}
           <InteractiveContent />
+
 
         </div>
       </div>
